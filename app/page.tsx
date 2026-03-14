@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Mic,
@@ -10,10 +13,31 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useUser } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
+import SymptomForm from "@/components/SymptomForm";
 
 export default function Home() {
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const { isSignedIn } = useUser();
+  const router = useRouter();
+
+  const handleStartConsultation = () => {
+    if (!isSignedIn) {
+      router.push("/sign-in");
+      return;
+    }
+    setIsFormOpen(true);
+  };
+
   return (
     <div className="min-h-screen bg-white">
+      {/* SYMPTOM FORM POPUP */}
+      <SymptomForm 
+        isOpen={isFormOpen} 
+        onClose={() => setIsFormOpen(false)} 
+      />
+
       {/* HERO SECTION */}
       <section className="relative pt-5 pb-20 px-6 max-w-7xl mx-auto">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
@@ -48,18 +72,21 @@ export default function Home() {
 
             <div className="flex items-center gap-4 pt-4">
               <Button
+                onClick={handleStartConsultation}
                 size="lg"
                 className="rounded-full h-14 px-8 gap-2 bg-[#3b82f6] hover:bg-blue-700 shadow-xl shadow-blue-200"
               >
                 <Mic size={20} /> Start Consultation
               </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="rounded-full h-14 px-8 gap-2 border-slate-200 hover:bg-slate-50"
-              >
-                View Doctors <MoveRight size={20} />
-              </Button>
+              <Link href="/doctors">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="rounded-full h-14 px-8 gap-2 border-slate-200 hover:bg-slate-50"
+                >
+                  View Doctors <MoveRight size={20} />
+                </Button>
+              </Link>
             </div>
 
             <div className="flex items-center gap-4 pt-4">
